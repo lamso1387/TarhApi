@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20210312042243_addIsDefaultToBaseInfo.cs" />
+    <Compile Remove="Migrations\20210312042243_addIsDefaultToBaseInfo.Designer.cs" />
+    <Compile Remove="Migrations\20210312042408_addIsDefaultToBaseInfo.cs" />
+    <Compile Remove="Migrations\20210312042408_addIsDefaultToBaseInfo.Designer.cs" />
+    <Compile Remove="Migrations\20210312042854_addIsDefaultToBaseInfo.cs" />
+    <Compile Remove="Migrations\20210312042854_addIsDefaultToBaseInfo.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Build" Version="16.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.5" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SRL\SRL\SRL.csproj" />
+  </ItemGroup>
+
+</Project>
