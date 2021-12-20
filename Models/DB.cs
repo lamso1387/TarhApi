@@ -59,6 +59,7 @@ namespace TarhApi.Models
             modelBuilder.Entity<UserRole>().HasIndex(bc => new { bc.user_id, bc.role_id }).IsUnique();
             modelBuilder.Entity<BaseInfo>().HasIndex(bc => new { bc.kind, bc.is_default }).HasFilter($"{nameof(BaseInfo.is_default)} = 1").IsUnique();
 
+            
 
             modelBuilder.ApplyConfiguration(new Applicant.ApplicantConfiguration());
             modelBuilder.ApplyConfiguration(new User.UserConfiguration());
