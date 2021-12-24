@@ -15,15 +15,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Reflection;
 using Microsoft.Build.Execution;
-using System.ComponentModel;
-using SRL;
-using System.Net.Http;
-using System.Security.AccessControl;
-using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
-using System.Text;
-using TarhApi.Services;
-using TarhApi.Middleware;
-using Microsoft.EntityFrameworkCore.Extensions.Internal;
+using System.ComponentModel; 
+using SRLCore.Model;
 
 namespace TarhApi.Controllers
 {
@@ -32,7 +25,7 @@ namespace TarhApi.Controllers
     public class PlanController : DefaultController
     {
 
-        public PlanController(IDistributedCache distributedCache, ILogger<PlanController> logger, TarhDb dbContext, UserService userService) :
+        public PlanController(IDistributedCache distributedCache, ILogger<PlanController> logger, TarhDb dbContext, SRLCore.Services.UserService<TarhDb, User, Role, UserRole> userService) :
             base(distributedCache, logger, dbContext, userService)
         {
 
@@ -40,7 +33,8 @@ namespace TarhApi.Controllers
         [HttpPost("add")]
         [DisplayName("افزودن طرح")]
         public async Task<IActionResult> AddPlan([FromBody] AddPlanRequest request)
-        {
+        { 
+
             SingleResponse<object> response = new SingleResponse<object>();
 
             request.CheckValidation(response);
@@ -49,7 +43,7 @@ namespace TarhApi.Controllers
 
             await Db.AddSave(entity);
 
-            return response.ToResponse(entity, SelectableField.CommonPropertySelector);
+            return response.ToResponse(entity,TarhApi.Models.SelectableField.CommonPropertySelector);
         }
 
         [HttpPost("search")]
@@ -66,7 +60,7 @@ namespace TarhApi.Controllers
                 .Include(x => x.knowledge_based_company_type).Include(x => x.lifecycle).Include(x => x.technology)
                 .Include(x => x.type).Include(x => x.events).ThenInclude(x => x.level_event).ThenInclude(x => x.level)
                  .ToListAsync();
-            return response.ToResponse(query, SelectableField.PlantSelector);
+            return response.ToResponse(query, TarhApi.Models.SelectableField.PlantSelector);
         }
 
         [HttpGet("{id}")]
@@ -87,7 +81,7 @@ namespace TarhApi.Controllers
             Db.Entry(existingEntity).Reference(x => x.type).Load();
             Db.Entry(existingEntity).Collection(x => x.events).Query().Include(x => x.level_event).ThenInclude(x => x.level).Load();
 
-            return response.ToResponse(existingEntity, SelectableField.PlantSelector);
+            return response.ToResponse(existingEntity, TarhApi.Models.SelectableField.PlantSelector);
         }
 
         [DisplayName("ویرایش طرح")]
@@ -118,7 +112,7 @@ namespace TarhApi.Controllers
 
             await Db.UpdateSave();
 
-            return response.ToResponse(existingEntity, SelectableField.CommonPropertySelector);
+            return response.ToResponse(existingEntity, TarhApi.Models.SelectableField.CommonPropertySelector);
         }
 
         [DisplayName("حذف طرح")]

@@ -4,31 +4,22 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using TarhApi.Services;
+using System.ComponentModel.DataAnnotations.Schema; 
 
 
 namespace TarhApi.Models
 {
 #pragma warning disable CS1591
 
-    public class TarhDb : DbContext
+    public class TarhDb : SRLCore.Model.DbEntity<TarhDb,User,Role,UserRole>
     {
         public TarhDb(DbContextOptions<TarhDb> options)
             : base(options)
         {
 
-        }
+        }  
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            optionsBuilder.EnableSensitiveDataLogging();
-        }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public override void ModelCreator(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserRole>().HasOne(bc => bc.user).WithMany(b => b.user_roles).HasForeignKey(bc => bc.user_id);
             modelBuilder.Entity<UserRole>().HasOne(bc => bc.role).WithMany(c => c.user_roles).HasForeignKey(bc => bc.role_id);
@@ -49,7 +40,7 @@ namespace TarhApi.Models
             modelBuilder.Entity<Level>().HasMany(c => c.events).WithOne(e => e.level).HasForeignKey(e => e.level_id);
             modelBuilder.Entity<LevelEvent>().HasMany(c => c.plan_events).WithOne(e => e.level_event).HasForeignKey(e => e.level_event_id);
             modelBuilder.Entity<Expert>().HasMany(c => c.Plans).WithOne(e => e.expert).HasForeignKey(e => e.expert_id);
-            
+
             modelBuilder.Entity<Expert>().HasOne(a => a.user).WithOne(b => b.expert).HasForeignKey<Expert>(b => b.user_id);
 
             modelBuilder.Entity<Plan>().HasIndex(p => new { p.shenase }).IsUnique();
@@ -59,17 +50,14 @@ namespace TarhApi.Models
             modelBuilder.Entity<UserRole>().HasIndex(bc => new { bc.user_id, bc.role_id }).IsUnique();
             modelBuilder.Entity<BaseInfo>().HasIndex(bc => new { bc.kind, bc.is_default }).HasFilter($"{nameof(BaseInfo.is_default)} = 1").IsUnique();
 
-            
+
 
             modelBuilder.ApplyConfiguration(new Applicant.ApplicantConfiguration());
             modelBuilder.ApplyConfiguration(new User.UserConfiguration());
 
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;//.OnDelete(DeleteBehavior.Cascade);
-            }
-            base.OnModelCreating(modelBuilder);
+            RestrinctDeleteBehavior(modelBuilder);
         }
+
         public DbSet<Plan> Plans { get; set; }
         public DbSet<PlanEvent> PlanEvents { get; set; }
         public DbSet<Level> Levels { get; set; }
@@ -79,22 +67,12 @@ namespace TarhApi.Models
         public DbSet<Province> Provinces { get; set; }
         public DbSet<Expert> Experts { get; set; }
         public DbSet<Applicant> Applicants { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
+        public override DbSet<User> Users { get; set; }
+        public override DbSet<Role> Roles { get; set; }
+        public override  DbSet<UserRole> UserRoles { get; set; }
     }
-    public abstract class CommonProperty
-    {
-        [Key]
-        public long id { get; set; }
-        public long creator_id { get; set; } = UserSession.Id;
-        public long? modifier_id { get; set; }
-        public DateTime create_date { get; set; } = DateTime.Now;
-        public DateTime? modify_date { get; set; }
-
-
-    } 
-    public class Plan : CommonProperty
+  
+    public class Plan : SRLCore.Model.CommonProperty
     {
         public long type_id { get; set; }
         public BaseInfo type { get; set; }
@@ -155,7 +133,7 @@ namespace TarhApi.Models
 
 
     }
-    public class PlanEvent : CommonProperty
+    public class PlanEvent : SRLCore.Model.CommonProperty
     {
         public long plan_id { get; set; }
         public Plan plan { get; set; }
@@ -175,7 +153,7 @@ namespace TarhApi.Models
         public string level_event_title => level_event?.title;
 
     }
-    public class Level : CommonProperty
+    public class Level : SRLCore.Model.CommonProperty
     {
         public ICollection<LevelEvent> events { get; set; }
 
@@ -187,7 +165,7 @@ namespace TarhApi.Models
         public int last_plan_count { get; set; }
 
     }
-    public class LevelEvent : CommonProperty
+    public class LevelEvent : SRLCore.Model.CommonProperty
     {
         public long level_id { get; set; }
         public Level level { get; set; }
@@ -200,7 +178,7 @@ namespace TarhApi.Models
         public string level_title => level?.title;
 
     }
-    public class BaseInfo : CommonProperty
+    public class BaseInfo : SRLCore.Model.CommonProperty
     {
         public ICollection<Plan> type_plans { get; set; }
         public ICollection<Plan> technology_plans { get; set; }
@@ -223,7 +201,7 @@ namespace TarhApi.Models
         [NotMapped]
         public int plan_count { get; set; }
     }
-    public class City : CommonProperty
+    public class City : SRLCore.Model.CommonProperty
     {
         public long province_id { get; set; }
         public Province province { get; set; }
@@ -236,14 +214,14 @@ namespace TarhApi.Models
         public string province_title => province?.title;
 
     }
-    public class Province : CommonProperty
+    public class Province : SRLCore.Model.IProvince
     {
         public ICollection<City> cities { get; set; }
 
         [Required]
-        public string title { get; set; }
+        public override string title { get; set; } 
     }
-    public class Expert : CommonProperty
+    public class Expert : SRLCore.Model.CommonProperty
     {
         public long user_id { get; set; }
         public User user { get; set; }
@@ -253,7 +231,7 @@ namespace TarhApi.Models
         public string full_name => user?.full_name;
 
     }
-    public class Applicant : CommonProperty
+    public class Applicant : SRLCore.Model.CommonProperty
     {
 
         public long city_id { get; set; }
@@ -283,7 +261,7 @@ namespace TarhApi.Models
         }
 
     }
-    public class User : CommonProperty
+    public class User : SRLCore.Model.IUser
     {
 
         public ICollection<UserRole> user_roles { get; set; } 
@@ -292,19 +270,27 @@ namespace TarhApi.Models
         [Required]
         public string national_code { get; set; }
         [Required]
-        public string first_name { get; set; }
+        public override string first_name { get; set; }
         [Required]
-        public string last_name { get; set; }
+        public override string last_name { get; set; }
         [Required]
-        public string mobile { get; set; }
+        public override string mobile { get; set; }
         [Required]
-        public byte[] password_hash { get; set; }
+        public override byte[] password_hash { get; set; }
         [NotMapped]
-        public string password { get; set; }
+        public override string password { get; set; }
         [Required]
-        public byte[] password_salt { get; set; }
+        public override byte[] password_salt { get; set; }
         [NotMapped, DisplayName("نام و نام خانوادگی")]
-        public string full_name { get => $"{first_name} {last_name}"; }
+        public override string full_name { get => $"{first_name} {last_name}"; }
+        [NotMapped]
+        public override string username { get => national_code; set => national_code = value; }
+        [NotMapped]
+        public override bool? change_pass_next_login { get; set; } = true;
+        [NotMapped]
+        public override DateTime? last_login { get; set; }
+        public override long creator_id { get; set; } 
+
         public class UserConfiguration : IEntityTypeConfiguration<User>
         {
             public void Configure(EntityTypeBuilder<User> builder)
@@ -315,22 +301,25 @@ namespace TarhApi.Models
         }
     }
 
-    public class Role : CommonProperty
+    public partial class Role : SRLCore.Model.IRole
     {
         public ICollection<UserRole> user_roles { get; set; }
+        public override long creator_id { get; set; }  
         [Required]
-        public string name { get; set; }
+        public override string name { get; set; }
         [Required]
-        public string accesses { get; set; }
-        [Column(TypeName = "nvarchar(50)")]
-        public EntityStatus status { get; set; }
+        public override string accesses { get; set; }
+        //[Column(TypeName = "nvarchar(50)")]
+        //public EntityStatus status { get; set; }
 
     }
-    public class UserRole : CommonProperty
+    public class UserRole : SRLCore.Model.IUserRole
     {
-        public long user_id { get; set; }
+        public override long creator_id { get; set; } 
+
+        public override long user_id { get; set; }
         public User user { get; set; }
-        public long role_id { get; set; }
+        public override long role_id { get; set; }
         public Role role { get; set; }
 
     }

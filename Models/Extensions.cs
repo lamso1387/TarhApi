@@ -6,77 +6,16 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Linq.Dynamic.Core;
-using System.Security.Cryptography.X509Certificates;
-using TarhApi.Middleware;
-using TarhApi.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using Microsoft.Extensions.Logging;
+using System.Linq.Dynamic.Core; 
+using SRLCore.Model;
+using SRLCore.Middleware;
 
 namespace TarhApi.Models
 {
 #pragma warning disable CS1591
 
-    public static class ResponseExtension
-    {
-        public static IActionResult ToHttpResponse(this IResponse response, ILogger Logger, HttpContext context)
-        {//should be deleted
-            var error = ErrorProp.GetError((ErrorCode)response.ErrorCode, response.ErrorMessage);
-            response.ErrorMessage = error.message;
-            return CreateHttpObject(response, error.status);
+     
 
-        }
-
-        public static IActionResult ToResponse<T>(this IResponse response, T entity, Func<T, object> selector)
-        {
-            var model = new List<T> { entity }.Select(selector).First();
-            return ToResponse(response, model);
-        }
-        public static IActionResult ToResponse<T>(this IResponse response, List<T> entity_list, Func<T, object> selector)
-        {
-            var model = entity_list.Select(selector).ToList();
-            return ToResponse(response, model);
-        }
-        public static IActionResult ToResponse<T>(this IResponse response, T model)
-        {
-            (response as dynamic).Model = model;
-            return ToResponse(response);
-        }
-
-        public static IActionResult ToResponse(this IResponse response)
-        {
-            ErrorCode error_code = ErrorCode.OK;
-            response.ErrorCode = (int)error_code;
-            var error = ErrorProp.GetError(error_code);
-            response.ErrorMessage = error.message;
-            return CreateHttpObject(response, error.status);
-        }
-
-        private static IActionResult CreateHttpObject(object response, HttpStatusCode status)
-        {
-            ObjectResult result = new ObjectResult(response);
-            result.StatusCode = (int)status;
-            return result;
-        }
-
-
-    }
-
-    public static class HttpContextExtentions
-    {
-        public static string GetActionName(this HttpContext context)
-        {
-            return context.GetRouteData().Values["action"].ToString();
-        }
-        public static bool NeedAuth(this HttpContext context, ref string action)
-        {
-            action = context.GetActionName();
-            return !Constants.Actions.NoAuth.Contains(action);
-        }
-    }
     public static class TarhDbExtensions
     {
         public static IQueryable<Applicant> GetApplicants(this TarhDb db, SearchApplicantRequest request)
@@ -306,7 +245,7 @@ namespace TarhApi.Models
         {
             if (!string.IsNullOrWhiteSpace(user.password))
             {
-                new UserService(db).CreatePasswordHash(user.password, out byte[] passwordHash, out byte[] passwordSalt);
+                new SRLCore.Services.UserService<TarhDb, User, Role, UserRole>(db).CreatePasswordHash(user.password, out byte[] passwordHash, out byte[] passwordSalt);
                 user.password_hash = passwordHash;
                 user.password_salt = passwordSalt;
             }
@@ -314,41 +253,8 @@ namespace TarhApi.Models
         }
     }
 
-    public static class IQueryableExtensions
-    {
-        public static IQueryable<TModel> Paging<TModel>(this IQueryable<TModel> query, PagedResponse<object> response, int pageStart = 0, int pageSize = 0) where TModel : class
-        {
-            response.ItemsCount = query.Count();
-            response.PageNumber = pageStart;
-            response.PageSize = pageSize;
-            return pageSize > 0 && pageStart > 0 ? query.Skip((pageStart - 1) * pageSize).Take(pageSize) :
-                query.Skip(0);
-
-        }
-        public static IQueryable<T> FilterNonActionAccess<T>(this IQueryable<T> query, string my_id, Func<IQueryable<T>, IQueryable<T>> MyUnionFunc)
-        {
-            IQueryable<T> data_to_union = null;
-            List<string> where_list = new List<string>();
-            string share_id = nameof(User.creator_id);
-            //  where_list.Add($"{all_data}");
-
-            //if (!string.IsNullOrWhiteSpace(my_id)) where_list.Add($"({my_data} and {my_id}=={UserSession.Id})");
-            // else if (my_data && MyUnionFunc != null) data_to_union = MyUnionFunc(query);
-
-            //where_list.Add($"({share_data} and { share_id}=={ UserSession.Id})");
-            string where_clause = string.Join(" || ", where_list);
-            if (!string.IsNullOrWhiteSpace(where_clause)) query = query.Where(where_clause).AsQueryable();
-            if (data_to_union != null) query = query.Union(data_to_union).OrderBy(nameof(CommonProperty.create_date));
-            return query;
-        }
-    }
-    public static class EntityExtensions
-    {
-        public static void ThrowIfNotExist(this CommonProperty existingEntity)
-        { if (existingEntity == null) throw new GlobalException(ErrorCode.NoContent); }
-
-
-    }
+    
+   
     public static class PlanExtensions
     {
         public static IQueryable<Plan> IncludeLastLevel(this IQueryable<Plan> plans,TarhDb Db)

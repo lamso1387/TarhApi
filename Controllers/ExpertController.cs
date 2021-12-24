@@ -1,28 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks; 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TarhApi.Models;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Threading;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Reflection;
-using Microsoft.Build.Execution;
-using System.ComponentModel;
-using SRL;
-using System.Net.Http;
-using System.Security.AccessControl;
-using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
-using System.Text;
-using TarhApi.Services;
-using TarhApi.Middleware;
+using Microsoft.Extensions.Caching.Distributed; 
+using Microsoft.AspNetCore.Routing; 
+using System.ComponentModel; 
+using SRLCore.Model;
 
 namespace TarhApi.Controllers
 {
@@ -31,7 +18,7 @@ namespace TarhApi.Controllers
     public class ExpertController : DefaultController
     {
 
-        public ExpertController(IDistributedCache distributedCache, ILogger<ExpertController> logger, TarhDb dbContext, UserService userService) :
+        public ExpertController(IDistributedCache distributedCache, ILogger<ExpertController> logger, TarhDb dbContext, SRLCore.Services.UserService<TarhDb, User, Role, UserRole> userService) :
             base(distributedCache, logger, dbContext, userService)
         {
 
@@ -40,6 +27,7 @@ namespace TarhApi.Controllers
         [DisplayName("افزودن کارشناس")]
         public async Task<IActionResult> AddExpert([FromBody] AddExpertRequest request)
         {
+            
             SingleResponse<object> response = new SingleResponse<object>();
 
             request.CheckValidation(response);

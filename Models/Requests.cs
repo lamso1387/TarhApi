@@ -1,68 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore.Internal;
+using SRLCore.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using TarhApi.Middleware;
-using TarhApi.Services;
+using System.Linq;  
 
 namespace TarhApi.Models
 {
 #pragma warning disable CS1591
-    public class DateRangeAttribute : RangeAttribute
-    {
-        public DateRangeAttribute()
-           : base(typeof(DateTime), DateTime.Now.AddYears(-20).ToShortDateString(), DateTime.Now.AddYears(20).ToShortDateString()) { }
-    }
-    public class PasswordAttribute : ValidationAttribute
-    {
-        public override bool IsValid(object value)
-        {
-            if (value == null) return false;
-            string pass = value.ToString();
-            if (pass.Length < 8) return false;
-            return true;
-        }
-    }
-    public abstract class AppRequest
-    {
-        public long id { get; set; }
-        public void CheckValidation(IResponse response)
-        {
-            if (CheckAttrbuteValidation())
-                if (CheckPropertyValidation())
-                {
-                    // if (!UserSession.HasNonActionAccess(NonActionAccess.AllData)) CheckAccessValidation();
-                }
-            if (validation_errors.Any())
-                throw new GlobalException(ErrorCode.BadRequest, validation_errors.First());
-
-        }
-        public bool CheckAttrbuteValidation()
-        {
-            validation_errors = SRL.ClassManagement.CheckValidationAttribute(this);
-            return validation_errors.Count == 0 ? true : false;
-        }
-        protected List<string> validation_errors { get; set; }
-        protected virtual bool CheckPropertyValidation() { return true; }
-        protected virtual bool CheckAccessValidation() { return true; }
-        public virtual EntityT ToEntity2<EntityT>(long? edit_id = null) 
-            where EntityT : CommonProperty  { return null; }
-    }
-    public class PagedRequest
-    {
-        /// <summary>
-        /// 1
-        /// </summary>
-        public int page_start { get; set; }
-        /// <summary>
-        /// 100
-        /// </summary>
-        public int page_size { get; set; }
-    }
+    
+    public abstract class AppRequest : SRLCore.Model.WebRequest { }
+    
     public class SearchPlanRequest : PagedRequest
     {
         public long? id { get; set; }
@@ -131,41 +81,7 @@ namespace TarhApi.Models
 
 
     }
-    public class AddUserRequest : AppRequest
-    {
-
-        internal PassMode pass_mode { get; set; }
-
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("نام")]
-        public string first_name { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("نام خانوادگی")]
-        public string last_name { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("موبایل")]
-        [SRL.Security.Mobile(ErrorMessage = Constants.MessageText.FieldFormatErrorDynamic)]
-        public string mobile { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("کدملی")]
-        [SRL.Security.NationalCode(ErrorMessage = Constants.MessageText.FieldFormatErrorDynamic)]
-        public string national_code { get; set; }
-        public string password { get; set; }
-        protected override bool CheckPropertyValidation()
-        {
-            bool is_valid = true;
-            if (pass_mode == PassMode.add || !string.IsNullOrWhiteSpace(password))
-            {
-                if (password == null) is_valid = false;
-                else
-                {
-                    string pass = password.ToString();
-                    if (pass.Length < 8) is_valid = false;
-                }
-            }
-            if (is_valid == false)
-                validation_errors.Add(Constants.MessageText.PasswordFormatError);
-
-            return is_valid;
-        }
-
-    }
+     
     public class AddPlanRequest : AppRequest
     {
         [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("نوع طرح")]
@@ -300,11 +216,7 @@ namespace TarhApi.Models
         public bool? is_default { get; set; }
     }
     
-    public class SearchUserRequest : PagedRequest
-    {
-        public long? id { get; set; }
-        public int? status { get; set; }
-    }
+    
     public static class RequestConvertor
     {
         public static Plan ToEntity(this AddPlanRequest request, long? edit_id = null)
@@ -344,11 +256,12 @@ namespace TarhApi.Models
             if (edit_id != null) entity.id = (long)edit_id;
             return entity;
         }
-        public static Province ToEntity(this AddProvinceRequest request, long? edit_id = null)
+        public static Province ToEntity(this AddProvinceRequest request,long user_id, long? edit_id = null)
         {
             var entity = new Province
             {
-                title = request.title
+                title = request.title,
+                creator_id=user_id
             };
             if (edit_id != null) entity.id = (long)edit_id;
             return entity;
@@ -407,29 +320,16 @@ namespace TarhApi.Models
             if (edit_id != null) entity.id = (long)edit_id;
             return entity;
         }
-        public static User ToEntity(this AddUserRequest request)
-        {
-            var user = new User
-            {
-                create_date = DateTime.Now,
-                creator_id = UserSession.Id,
-                first_name = request.first_name,
-                last_name = request.last_name,
-                mobile = request.mobile,
-                national_code = request.national_code,
-                password = request.password,
-            };
-            return user;
-        }
+       
 
-        public static Role ToEntity(this AddRoleRequest request)
+        public static Role ToEntity(this AddRoleRequest request, long user_id)
    => new Role
    {
        create_date = DateTime.Now,
-       creator_id = UserSession.Id,
+       creator_id = user_id,
        accesses = request.accesses.Join(","),
        name = request.name,
-       status = EntityStatus.active
+       status = SRLCore.Model.EntityStatus.active.ToString()
    };
     }
 #pragma warning restore CS1591

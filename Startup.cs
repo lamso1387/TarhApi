@@ -19,13 +19,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.Security.Principal;
-using Microsoft.AspNetCore.Routing;
-using TarhApi.Services;
-using Newtonsoft.Json; 
+using Microsoft.AspNetCore.Routing; 
 using TarhApi.Controllers;
 using Microsoft.Extensions.Hosting;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-using TarhApi.Middleware;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment; 
+using SRLCore.Middleware;
 
 namespace TarhApi
 {
@@ -40,8 +38,21 @@ namespace TarhApi
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
-            services.AddScoped<UserService>();
+        {
+            
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+
+            SRLCore.Model.UserSession.get_all_access = Role.get_all_access;
+
+            services.AddScoped<SRLCore.Services.UserService<TarhDb, User, Role, UserRole>>();
             services.AddScoped<ILogger, Logger<DefaultController>>();
 
             services.Configure<ApiBehaviorOptions>(options =>
@@ -61,7 +72,7 @@ namespace TarhApi
                 });
             services.AddDbContext<TarhDb>(builder =>
             {
-                builder.UseSqlServer(Configuration[Constants.Setting.TarhDbConfugrationValue]);
+                builder.UseSqlServer(Configuration["AppSettings:TarhConnectionString"]);
             });
             services.AddSwaggerGen(options =>
             {
@@ -75,10 +86,12 @@ namespace TarhApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger Logger)// IWebHostEnvironment env)
         {
+            app.UseSession();
+
             app.UseCors(builder => builder.WithOrigins("http://localhost", "http://localhost:4200").AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 
             app.UseGetRoutesMiddleware(GetRoutes);
-            app.UseMiddleware<CustomHandlerMiddleware>();
+            app.UseMiddleware<SRLCore.Middleware.HandlerMiddleware<TarhDb,User,Role,UserRole>>();
  
             if (env.IsDevelopment())
             {

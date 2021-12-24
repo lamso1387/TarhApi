@@ -20,10 +20,8 @@ using SRL;
 using System.Net.Http;
 using System.Security.AccessControl;
 using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
-using System.Text;
-using TarhApi.Services;
-using TarhApi.Middleware;
-
+using System.Text; 
+using SRLCore.Model;
 namespace TarhApi.Controllers
 {
     [Route("api/[controller]")]
@@ -31,7 +29,7 @@ namespace TarhApi.Controllers
     public class BaseInfoController : DefaultController
     {
 
-        public BaseInfoController(IDistributedCache distributedCache, ILogger<BaseInfoController> logger, TarhDb dbContext, UserService userService) :
+        public BaseInfoController(IDistributedCache distributedCache, ILogger<BaseInfoController> logger, TarhDb dbContext, SRLCore.Services.UserService<TarhDb, User, Role, UserRole> userService) :
             base(distributedCache, logger, dbContext, userService)
         {
 

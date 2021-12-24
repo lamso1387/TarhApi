@@ -20,9 +20,8 @@ using SRL;
 using System.Net.Http;
 using System.Security.AccessControl;
 using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
-using System.Text;
-using TarhApi.Services;
-using TarhApi.Middleware;
+using System.Text; 
+using SRLCore.Model;
 
 namespace TarhApi.Controllers
 {
@@ -31,7 +30,7 @@ namespace TarhApi.Controllers
     public class CityController : DefaultController
     {
 
-        public CityController(IDistributedCache distributedCache, ILogger<CityController> logger, TarhDb dbContext, UserService userService) :
+        public CityController(IDistributedCache distributedCache, ILogger<CityController> logger, TarhDb dbContext, SRLCore.Services.UserService<TarhDb, User, Role, UserRole> userService) :
             base(distributedCache, logger, dbContext, userService)
         {
 
@@ -85,7 +84,7 @@ namespace TarhApi.Controllers
         [DisplayName("مشاهده شهر")]
         public async Task<IActionResult> GetCity(long id)
         {
-            SingleResponse<object> response = new SingleResponse<object>();
+            SRLCore.Model.SingleResponse<object> response = new SRLCore.Model.SingleResponse<object>();
 
             var existingEntity = await Db.GetCity(new City { id = id });
             existingEntity.ThrowIfNotExist();

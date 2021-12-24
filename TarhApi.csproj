@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20210312042408_addIsDefaultToBaseInfo.Designer.cs" />
     <Compile Remove="Migrations\20210312042854_addIsDefaultToBaseInfo.cs" />
     <Compile Remove="Migrations\20210312042854_addIsDefaultToBaseInfo.Designer.cs" />
+    <Compile Remove="Migrations\20211223123919_db from srlcore.user service from srlcore.cs" />
+    <Compile Remove="Migrations\20211223123919_db from srlcore.user service from srlcore.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.1" />
     <PackageReference Include="Microsoft.Build" Version="16.8.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
@@ -30,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\SRLCore\SRLCore\SRLCore.csproj" />
     <ProjectReference Include="..\..\..\SRL\SRL\SRL.csproj" />
   </ItemGroup>
 

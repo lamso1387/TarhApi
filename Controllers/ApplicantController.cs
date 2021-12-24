@@ -20,9 +20,8 @@ using SRL;
 using System.Net.Http;
 using System.Security.AccessControl;
 using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
-using System.Text;
-using TarhApi.Services;
-using TarhApi.Middleware;
+using System.Text; 
+using SRLCore.Model;
 
 namespace TarhApi.Controllers
 {
@@ -31,7 +30,7 @@ namespace TarhApi.Controllers
     public class ApplicantController : DefaultController
     {
 
-        public ApplicantController(IDistributedCache distributedCache, ILogger<ApplicantController> logger, TarhDb dbContext, UserService userService) :
+        public ApplicantController(IDistributedCache distributedCache, ILogger<ApplicantController> logger, TarhDb dbContext,SRLCore.Services.UserService<TarhDb,User,Role,UserRole> userService) :
             base(distributedCache, logger, dbContext, userService)
         {
            
@@ -48,13 +47,13 @@ namespace TarhApi.Controllers
         [DisplayName("جستجوی متقاضی")]
         public async Task<IActionResult> SearchApplicant([FromBody] SearchApplicantRequest request)
         {
-            PagedResponse<object> response = new PagedResponse<object>();
+            SRLCore.Model.PagedResponse<object> response = new SRLCore.Model.PagedResponse<object>();
 
             var query = await Db.GetApplicants(request).Paging(response, request.page_start, request.page_size)
                 .Include(x => x.city).Include(x => x.type)
                  .ToListAsync();
 
-            return response.ToResponse(query, SelectableField.ApplicantSelector);
+            return response.ToResponse(query, TarhApi.Models.SelectableField.ApplicantSelector);
         }
 
         [HttpGet("{id}")]
@@ -65,7 +64,7 @@ namespace TarhApi.Controllers
             var existingEntity = await Db.GetApplicant(new Applicant { id = id });
             Db.Entry(existingEntity).Reference(x => x.city).Load();
             Db.Entry(existingEntity).Reference(x => x.type).Load();
-            return base.Get(existingEntity, SelectableField.ApplicantSelector);
+            return base.Get(existingEntity, TarhApi.Models.SelectableField.ApplicantSelector);
         }
 
         [DisplayName("ویرایش متقاضی")]

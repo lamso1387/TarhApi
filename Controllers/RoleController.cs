@@ -7,13 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TarhApi.Models;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Distributed; 
 using System.Reflection;
-using System.ComponentModel; 
-using System.Runtime.CompilerServices;
-using TarhApi.Services;
+using System.ComponentModel;  
+using SRLCore.Model;
 
 namespace TarhApi.Controllers
 { 
@@ -21,7 +18,7 @@ namespace TarhApi.Controllers
     [ApiController]
     public class RoleController : DefaultController
     {
-        public RoleController(IDistributedCache distributedCache, ILogger<RoleController> logger, TarhDb dbContext,UserService us) :
+        public RoleController(IDistributedCache distributedCache, ILogger<RoleController> logger, TarhDb dbContext, SRLCore.Services.UserService<TarhDb, User, Role, UserRole> us) :
             base(distributedCache, logger, dbContext,us)
         {
 
@@ -32,7 +29,7 @@ namespace TarhApi.Controllers
         public async Task<IActionResult> SearchRole()
         {
             string method = nameof(SearchRole);
-            LogHandler.LogMethod(EventType.Call, Logger, method);
+            LogHandler.LogMethod(SRLCore.Model.EventType.Call, Logger, method);
             PagedResponse<object> response = new PagedResponse<object>();
 
             try
@@ -73,7 +70,7 @@ namespace TarhApi.Controllers
 
                 request.CheckValidation(response);
 
-                var entiry = request.ToEntity();
+                var entiry = request.ToEntity(user_session_id);
 
                 var existingEntity = await Db.GetRole(entiry);
                 if (existingEntity != null)
@@ -87,7 +84,7 @@ namespace TarhApi.Controllers
                     var user_role = new UserRole
                     {
                         create_date = DateTime.Now,
-                        creator_id = UserSession.Id,
+                        creator_id = user_session_id,
                         role = entiry,
                         user = user
                     };
@@ -214,7 +211,7 @@ namespace TarhApi.Controllers
 
                 request.CheckValidation(response);
 
-                var entiry = request.ToEntity();
+                var entiry = request.ToEntity(user_session_id);
                 entiry.id = request.id;
 
                 var existingEntity = await Db.GetRole(new Role { id=entiry.id});
@@ -233,7 +230,7 @@ namespace TarhApi.Controllers
                     }
                 }
                 existingEntity.name = entiry.name;
-                existingEntity.modifier_id = UserSession.Id;
+                existingEntity.modifier_id = user_session_id;
                 existingEntity.modify_date = DateTime.Now;
                 existingEntity.accesses = entiry.accesses;
 
@@ -253,7 +250,7 @@ namespace TarhApi.Controllers
                         var user_role = new UserRole
                         {
                             create_date = DateTime.Now,
-                            creator_id = UserSession.Id,
+                            creator_id = user_session_id,
                             role = existingEntity,
                             user = new_user
                         };

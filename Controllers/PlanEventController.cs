@@ -16,13 +16,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Reflection;
 using Microsoft.Build.Execution;
 using System.ComponentModel;
-using SRL;
-using System.Net.Http;
-using System.Security.AccessControl;
-using Microsoft.AspNetCore.Rewrite.Internal.UrlActions;
-using System.Text;
-using TarhApi.Services;
-using TarhApi.Middleware;
+using SRL; 
+using SRLCore.Model;
 
 namespace TarhApi.Controllers
 {
@@ -31,7 +26,7 @@ namespace TarhApi.Controllers
     public class PlanEventController : DefaultController
     {
 
-        public PlanEventController(IDistributedCache distributedCache, ILogger<PlanEventController> logger, TarhDb dbContext, UserService userService) :
+        public PlanEventController(IDistributedCache distributedCache, ILogger<PlanEventController> logger, TarhDb dbContext, SRLCore.Services.UserService<TarhDb, User, Role, UserRole> userService) :
             base(distributedCache, logger, dbContext, userService)
         {
 
@@ -48,7 +43,7 @@ namespace TarhApi.Controllers
 
             await Db.AddSave(entity);
 
-            return response.ToResponse<PlanEvent>(entity,  SelectableField.CommonPropertySelector);
+            return response.ToResponse<PlanEvent>(entity, TarhApi.Models.SelectableField.CommonPropertySelector);
         }
 
         [HttpPost("search")]
@@ -60,7 +55,7 @@ namespace TarhApi.Controllers
             var query =await Db.GetEvents(request).Paging(response, request.page_start, request.page_size)
                 .Include(x => x.plan).Include(x=>x.level_event).ThenInclude(x=>x.level)
                 .ToListAsync();
-            return response.ToResponse(query, SelectableField.PlantEventSelector);
+            return response.ToResponse(query, TarhApi.Models.SelectableField.PlantEventSelector);
 
         }
 
@@ -76,7 +71,7 @@ namespace TarhApi.Controllers
             Db.Entry(existingEntity).Reference(x => x.level_event).Load();
             Db.Entry(existingEntity).Reference(x => x.plan).Load();
 
-            return response.ToResponse(existingEntity, SelectableField.PlantEventSelector);
+            return response.ToResponse(existingEntity, TarhApi.Models.SelectableField.PlantEventSelector);
         }
 
         [DisplayName("ویرایش رویداد ")]
@@ -103,7 +98,7 @@ namespace TarhApi.Controllers
 
             await Db.UpdateSave();
 
-            return response.ToResponse<PlanEvent>(existingEntity, SelectableField.CommonPropertySelector);
+            return response.ToResponse<PlanEvent>(existingEntity, TarhApi.Models.SelectableField.CommonPropertySelector);
         }
 
         [DisplayName("حذف رویداد")]
