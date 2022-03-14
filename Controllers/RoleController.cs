@@ -58,7 +58,7 @@ namespace TarhApi.Controllers
 
         [HttpPost("add")]
         [DisplayName("افزودن نقش")]
-        public async Task<IActionResult> AddRole([FromBody] AddRoleRequest request)
+        public async Task<IActionResult> AddRole([FromBody] Models.AddRoleRequest request)
         {
             string method = nameof(AddRole);
             LogHandler.LogMethod(EventType.Call, Logger, method, request);
@@ -70,7 +70,7 @@ namespace TarhApi.Controllers
 
                 request.CheckValidation(response);
 
-                var entiry = request.ToEntity(user_session_id);
+                var entiry =  request.ToEntity(user_session_id);
 
                 var existingEntity = await Db.GetRole(entiry);
                 if (existingEntity != null)
@@ -199,7 +199,7 @@ namespace TarhApi.Controllers
 
         [HttpPut("edit")]
         [DisplayName("ویرایش نقش")]
-        public async Task<IActionResult> EditRole([FromBody] AddRoleRequest request)
+        public async Task<IActionResult> EditRole([FromBody] Models.AddRoleRequest request)
         {
             string method = nameof(EditRole);
             LogHandler.LogMethod(EventType.Call, Logger, method, request);
