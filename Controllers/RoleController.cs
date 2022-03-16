@@ -70,7 +70,7 @@ namespace TarhApi.Controllers
 
                 request.CheckValidation(response);
 
-                var entiry = request.ToEntity(user_session_id);
+                var entiry =  request.ToEntity(user_session_id);
 
                 var existingEntity = await Db.GetRole(entiry);
                 if (existingEntity != null)
