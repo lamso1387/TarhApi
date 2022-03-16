@@ -125,7 +125,7 @@ namespace TarhApi
     {
         routes.MapRoute(
         name: "default",
-        template: "{controller=deposit}/{action=test}/{id?}");
+        template: "{controller=driver}/{action=SearchActiveDriver}/{id?}");
     };
     }
 }

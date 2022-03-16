@@ -33,8 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SRLCore\SRLCore\SRLCore.csproj" />
-    <ProjectReference Include="..\..\..\SRL\SRL\SRL.csproj" />
+    <ProjectReference Include="..\..\SRLCore\SRLCore\SRLCore.csproj" />
+    <ProjectReference Include="..\..\SRL\srl\SRL.csproj" />
   </ItemGroup>
 
 </Project>

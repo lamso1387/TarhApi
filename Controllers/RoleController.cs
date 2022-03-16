@@ -58,7 +58,7 @@ namespace TarhApi.Controllers
 
         [HttpPost("add")]
         [DisplayName("افزودن نقش")]
-        public async Task<IActionResult> AddRole([FromBody] AddRoleRequest request)
+        public async Task<IActionResult> AddRole([FromBody] Models.AddRoleRequest request)
         {
             string method = nameof(AddRole);
             LogHandler.LogMethod(EventType.Call, Logger, method, request);
@@ -199,7 +199,7 @@ namespace TarhApi.Controllers
 
         [HttpPut("edit")]
         [DisplayName("ویرایش نقش")]
-        public async Task<IActionResult> EditRole([FromBody] AddRoleRequest request)
+        public async Task<IActionResult> EditRole([FromBody] Models.AddRoleRequest request)
         {
             string method = nameof(EditRole);
             LogHandler.LogMethod(EventType.Call, Logger, method, request);
@@ -233,7 +233,6 @@ namespace TarhApi.Controllers
                 existingEntity.modifier_id = user_session_id;
                 existingEntity.modify_date = DateTime.Now;
                 existingEntity.accesses = entiry.accesses;
-
                 
                 var users_old = Db.UserRoles.Where(x => x.role_id == existingEntity.id).Select(x => x.user);
                 var user_ids_to_delet = users_old.Select(x => x.id).Where(x => !request.user_ids.Select(y => y).Contains(x));

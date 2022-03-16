@@ -58,6 +58,11 @@ namespace TarhApi.Models
             RestrinctDeleteBehavior(modelBuilder);
         }
 
+        public override string GetConnectionString()
+        {
+            throw new NotImplementedException();
+        }
+
         public DbSet<Plan> Plans { get; set; }
         public DbSet<PlanEvent> PlanEvents { get; set; }
         public DbSet<Level> Levels { get; set; }

@@ -33,7 +33,7 @@ namespace TarhApi
                     EventLogSettings event_ = new EventLogSettings();
                    event_.LogName = "TarhLog";
                    event_.SourceName = "TarhSource";
-                   logging.AddEventLog(event_); // use anywere. see in event viewer
+             //      logging.AddEventLog(event_); // use anywere. see in event viewer
 
                 });
     }

@@ -33,7 +33,7 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<Applicant> GetApplicant(this TarhDb db, Applicant entity)
-      => await db.Applicants.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.Applicants.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<Plan> GetPlans(this TarhDb db, SearchPlanRequest request)
         {
             return GetPlans(db, request.id,request.applicant_id);
@@ -53,7 +53,7 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<Plan> GetPlan(this TarhDb db, Plan entity)
-      => await db.Plans.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.Plans.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<BaseInfo> GetBaseInfos(this TarhDb db, SearchBaseInfoRequest request)
         {
             return GetBaseInfos(db, request.id, request.kind);
@@ -71,7 +71,7 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<BaseInfo> GetBaseInfo(this TarhDb db, BaseInfo entity)
-      => await db.BaseInfos.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.BaseInfos.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<Province> GetProvinces(this TarhDb db, SearchProvinceRequest request)
         {
             return GetProvinces(db, request.id);
@@ -87,7 +87,7 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<Province> GetProvince(this TarhDb db, Province entity)
-      => await db.Provinces.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.Provinces.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<Level> GetLevels(this TarhDb db, SearchLevelRequest request)
         {
             return GetLevels(db, request.id);
@@ -103,7 +103,7 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<Level> GetLevel(this TarhDb db, Level entity)
-      => await db.Levels.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.Levels.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<City> GetCities(this TarhDb db, SearchCityRequest request)
         {
             return GetCities(db, request.id, request.province_id);
@@ -121,7 +121,7 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<City> GetCity(this TarhDb db, City entity)
-      => await db.Cities.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.Cities.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<LevelEvent> GetLevelEvents(this TarhDb db, SearchLevelEventRequest request)
         {
             return GetLevelEvents(db, request.id, request.level_id);
@@ -139,7 +139,7 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<LevelEvent> GetLevelEvent(this TarhDb db, LevelEvent entity)
-      => await db.LevelEvents.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.LevelEvents.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<PlanEvent> GetEvents(this TarhDb db, SearchEventRequest request)
         {
             return GetEvents(db, request.id, request.plan_id);
@@ -157,7 +157,7 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<PlanEvent> GetEvent(this TarhDb db, PlanEvent entity)
-      => await db.PlanEvents.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.PlanEvents.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<Expert> GetExperts(this TarhDb db, SearchExpertRequest request)
         {
             return GetExperts(db, request.id, request.user_id);
@@ -175,16 +175,14 @@ namespace TarhApi.Models
             return query;
         }
         public static async Task<Expert> GetExpert(this TarhDb db, Expert entity)
-      => await db.Experts.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id);
+      => await db.Experts.FirstOrDefaultAsync(item => item.id == entity.id);
         public static IQueryable<User> GetUsers(this TarhDb db, long? id = null)
         {
             var query = db.Users.AsQueryable();
 
             if (id.HasValue)
                 query = query.Where(item => item.id == id);
-
-            query = query.FilterNonActionAccess(nameof(User.id), null);
-
+             
             return query;
         }
         public static IQueryable<User> GetUsers(this TarhDb db, SearchUserRequest request)
@@ -193,10 +191,10 @@ namespace TarhApi.Models
 
         }
         public static async Task<User> GetUser(this TarhDb db, User entity)
-        => await db.Users.FilterNonActionAccess(nameof(User.id), null).FirstOrDefaultAsync(item => item.id == entity.id || (item.national_code == entity.national_code));
+        => await db.Users.FirstOrDefaultAsync(item => item.id == entity.id || (item.national_code == entity.national_code));
 
         public static async Task<Role> GetRole(this TarhDb db, Role entity)
-    => await db.Roles.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id || item.name == entity.name);
+    => await db.Roles.FirstOrDefaultAsync(item => item.id == entity.id || item.name == entity.name);
         public static IQueryable<Role> GetRoles(this TarhDb db, long? id = null, string name = null)
         {
             var query = db.Roles.AsQueryable();
@@ -205,14 +203,14 @@ namespace TarhApi.Models
                 query = query.Where(item => item.id == id);
             if (!string.IsNullOrWhiteSpace(name))
                 query = query.Where(item => item.name == name);
-            query = query.FilterNonActionAccess(null, null);
+            query = query;
             return query;
         }
         public static async Task<UserRole> GetUserRole(this TarhDb db, UserRole entity)
-=> await db.UserRoles.FilterNonActionAccess(null, null).FirstOrDefaultAsync(item => item.id == entity.id || (item.user_id == entity.user_id && item.role_id == entity.role_id));
+=> await db.UserRoles.FirstOrDefaultAsync(item => item.id == entity.id || (item.user_id == entity.user_id && item.role_id == entity.role_id));
 
         public static IQueryable<UserRole> GetUserRoles(this TarhDb db, long role_id)
-=> db.UserRoles.FilterNonActionAccess(null, null).Where(item => item.role_id == role_id).AsQueryable();
+=> db.UserRoles.Where(item => item.role_id == role_id).AsQueryable();
 
 
         public static async Task AddSave<T>(this TarhDb db, T entity)
