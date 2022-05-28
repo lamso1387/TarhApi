@@ -13,6 +13,10 @@ namespace TarhApi.Models
 
     public class TarhDb : SRLCore.Model.DbEntity<TarhDb,User,Role,UserRole>
     {
+        public override string GetConnectionString()
+        {
+            return Startup.GetConnection();
+        }
         public TarhDb(DbContextOptions<TarhDb> options)
             : base(options)
         {
@@ -58,10 +62,7 @@ namespace TarhApi.Models
             RestrinctDeleteBehavior(modelBuilder);
         }
 
-        public override string GetConnectionString()
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public DbSet<Plan> Plans { get; set; }
         public DbSet<PlanEvent> PlanEvents { get; set; }

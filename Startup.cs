@@ -24,11 +24,18 @@ using TarhApi.Controllers;
 using Microsoft.Extensions.Hosting;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment; 
 using SRLCore.Middleware;
+using TarhApi.Middleware;
 
 namespace TarhApi
 {
     public class Startup
     {
+        public static string GetConnection()
+        {
+            TextReader tr = new StreamReader(@"DbConnection.txt");
+            string con = tr.ReadLine();
+            return con;
+        }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -72,15 +79,28 @@ namespace TarhApi
                 });
             services.AddDbContext<TarhDb>(builder =>
             {
-                builder.UseSqlServer(Configuration["AppSettings:TarhConnectionString"]);
-            });
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Tarh API", Version = "v1" });
+                builder.UseSqlServer(GetConnection());
+                //
 
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "tarh  API",
+                    Description = "tarh  ASP.NET Core 2.1 Web API",
+                    //TermsOfService = "None",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact()
+                    {
+                        Name = "Neel Bhatt",
+                        Email = "neel.bhatt40@gmail.com",
+                        // Url = new Uri("https://neelbhatt40.wordpress.com/")
+                    }
+                });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,9 +110,23 @@ namespace TarhApi
 
             app.UseCors(builder => builder.WithOrigins("http://localhost", "http://localhost:4200").AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 
+            app.UseSwagger(options =>
+            {
+                //options.SerializeAsV2 = true;
+            });
+
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                // options.RoutePrefix = string.Empty;
+
+
+            });
+
             app.UseGetRoutesMiddleware(GetRoutes);
-            app.UseMiddleware<SRLCore.Middleware.HandlerMiddleware<TarhDb,User,Role,UserRole>>();
- 
+            app.UseMiddleware<AppHandlerMiddleware>();
+
+
             if (env.IsDevelopment())
             {
          //       app.UseDeveloperExceptionPage();
@@ -105,11 +139,7 @@ namespace TarhApi
             app.UseHttpsRedirection();
             app.UseMvc(GetRoutes);
 
-            app.UseSwagger();
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Tarh API V1");
-            });
+           
 
 
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())

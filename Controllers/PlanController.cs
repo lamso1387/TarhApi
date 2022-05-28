@@ -140,14 +140,14 @@ namespace TarhApi.Controllers
             IEnumerable<BaseInfo> type_share = null;
             Task type_share_task = Task.Run(async () =>
             {
-                type_share = (await Db.GetPlans().ToListAsync())
-                .GroupBy(x => x.type_id)
-                .Select(x =>
-               {
-                   int count = x.Count();
-                   return new { type_id = x.Key, count, type_share = (count / plan_count_all).ToString("0.##") };
-               })
-                .Join(Db.GetBaseInfos(),
+                var plans = await Db.GetPlans().ToListAsync();
+                var type_share_g = plans.GroupBy(x => x.type_id);
+                var type_share_sel = type_share_g.Select(x =>
+                {
+                    int count = x.Count();
+                    return new { type_id = x.Key, count, type_share = (count / plan_count_all).ToString("0.##") };
+                });
+              type_share= type_share_sel.Join(Db.GetBaseInfos(),
       plan => plan.type_id,
       type => type.id,
       (plan, type) => new BaseInfo { id = plan.type_id, title = type.title, plan_share = plan.type_share, plan_count = plan.count });

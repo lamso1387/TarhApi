@@ -103,7 +103,7 @@ namespace TarhApi.Controllers
 
             request.CheckValidation(response);
 
-            var entity = request.ToEntity(request.id);
+            var entity = request.ToEntity(user_session_id, request.id);
 
             var existingEntity = await Db.GetProvince(entity);
             existingEntity.ThrowIfNotExist();
