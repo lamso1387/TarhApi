@@ -296,7 +296,7 @@ namespace TarhApi.Controllers
 
             try
             {
-                IEnumerable<Type> all_controller_types = SRL.ChildParent.GetAllChildrenClasses<DefaultController>(Assembly.GetAssembly(typeof(DefaultController)));
+                IEnumerable<Type> all_controller_types = SRL.ChildParent.GetAllChildrenClasses<DefaultController>(Assembly.GetAssembly(typeof(DefaultController)) );
                 List<object> action_titles = new List<object>();
                 foreach (var controller_type in all_controller_types)
                 {

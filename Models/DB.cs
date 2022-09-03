@@ -77,7 +77,23 @@ namespace TarhApi.Models
         public override DbSet<Role> Roles { get; set; }
         public override  DbSet<UserRole> UserRoles { get; set; }
     }
-  
+
+    public class Evidence : SRLCore.Model.CommonProperty
+    {
+        [Required]
+        public string title { get; set; }
+        public DateTime evidence_date { get; set; } 
+        public string description { get; set; }
+        public string tag { get; set; }
+
+    }
+    public class BaseInfo : SRLCore.Model.CommonProperty
+    { 
+        public ICollection<Applicant> related_category_applicants { get; set; } 
+        [Required]
+        public string title { get; set; }
+    }
+
     public class Plan : SRLCore.Model.CommonProperty
     {
         public long type_id { get; set; }
