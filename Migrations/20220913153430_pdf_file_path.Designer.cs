@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TarhApi.Models;
 
 namespace TarhApi.Migrations
 {
     [DbContext(typeof(TarhDb))]
-    partial class TarhDbModelSnapshot : ModelSnapshot
+    [Migration("20220913153430_pdf_file_path")]
+    partial class pdf_file_path
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -35,7 +35,7 @@ namespace TarhApi.Controllers
         protected override User RequestToEntity(AddUserRequest requst) {
             var entity = new User
             {
-                creator_id =  user_session_id,
+                creator_id = 1,// user_session_id,
                 first_name=requst.first_name,
                 last_name = requst.last_name,
                 mobile = requst.mobile,

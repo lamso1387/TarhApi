@@ -10,6 +10,35 @@ namespace TarhApi.Models
 
     public class SelectableField
     {
+        public static Func<Evidence, object> EvidenceSelector => x => new
+        {
+            x.id,
+            x.create_date,
+            x.creator_id,
+            x.description,
+            x.doc_type_id,
+            x.doc_type_title,
+            x.evidence_pdate,
+            x.tag,
+            x.sub_company_id,
+            x.sub_company_title, 
+            x.pdf_file,
+            x.explain
+        };
+        public static Func<Evidence, object> EvidenceSearchSelector => x => new
+        {
+            x.id,
+            x.create_date,
+            x.creator_id,
+            x.description,
+            x.doc_type_id,
+            x.doc_type_title,
+            x.evidence_pdate,
+            x.tag,
+            x.sub_company_id,
+            x.sub_company_title,
+            x.pdf_file_name
+        };
         public static Func<Applicant, object> ApplicantSelector => x => new
         {
             x.id,

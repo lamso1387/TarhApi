@@ -30,6 +30,7 @@ namespace TarhApi.Models
     {
         public long? id { get; set; }
     }
+    
     public class SearchCityRequest : PagedRequest
     {
         public long? id { get; set; }
@@ -55,6 +56,13 @@ namespace TarhApi.Models
         public long? id { get; set; }
 
         public BaseKind? kind { get; set; }
+    }
+    public class SearchEvidenceRequest : PagedRequest
+    {
+        public long? id { get; set; }
+        public long? doc_type_id { get; set; }
+        public long? sub_company_id { get; set; }
+
     }
     public class AddRoleRequest : AppRequest
     {
@@ -215,8 +223,31 @@ namespace TarhApi.Models
         [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("پیش فرض")]
         public bool? is_default { get; set; }
     }
-    
-    
+
+
+    public class SrlFile
+    {
+        public string name { get; set; }
+        public string base64_string { get; set; }
+    }
+    public class AddEvidenceRequest : AppRequest
+    {
+        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("نوع سند")]
+        public long doc_type_id { get; set; }
+        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("شرکت زیرمجموعه")]
+        public long sub_company_id { get; set; }
+        [ DisplayName("برچسب")]
+        public string tag { get; set; }
+        [DisplayName("توضیحات")]
+        public string description { get; set; } 
+        [RegularExpression(@"^1[34][0-9][0-9]\/((1[0-2])|([1-9]))\/(([12][0-9])|(3[01])|[1-9])$"), DisplayName("تاریخ سند")]
+        public string evidence_pdate { get; set; }
+        public SrlFile pdf_file { get; set; }
+        [DisplayName("شرح")]
+        public string explain { get; set; }
+
+    }
+
     public static class RequestConvertor
     {
         public static Plan ToEntity(this AddPlanRequest request, long? edit_id = null)

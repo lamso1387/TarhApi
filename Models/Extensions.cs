@@ -212,6 +212,26 @@ namespace TarhApi.Models
         public static IQueryable<UserRole> GetUserRoles(this TarhDb db, long role_id)
 => db.UserRoles.Where(item => item.role_id == role_id).AsQueryable();
 
+        public static IQueryable<Evidence> GetEvidences(this TarhDb db, SearchEvidenceRequest request)
+        {
+            return GetEvidences(db, request.id, request.doc_type_id, request.sub_company_id);
+
+        }
+        public static IQueryable<Evidence> GetEvidences(this TarhDb db, long? id = null, long? doc_type_id = null, long? sub_company_id = null)
+        {
+            var query = db.Evidences.AsQueryable();
+
+            if (id.HasValue)
+                query = query.Where(item => item.id == id); 
+            if (doc_type_id.HasValue)
+                query = query.Where(item => item.doc_type_id == doc_type_id); 
+            if (sub_company_id.HasValue)
+                query = query.Where(item => item.sub_company_id == sub_company_id); 
+
+            return query;
+        }
+        public static async Task<Evidence> GetEvidence(this TarhDb db, Evidence entity)
+      => await db.Evidences.FirstOrDefaultAsync(item => item.id == entity.id);
 
         public static async Task AddSave<T>(this TarhDb db, T entity)
         {

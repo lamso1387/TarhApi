@@ -34,3 +34,5 @@ msbuild.wrn
 .vs/
 
 DbConnection.txt
+DbConnectionAll.txt
+EvidenceFolderPath.txt

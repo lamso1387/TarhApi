@@ -36,7 +36,7 @@ namespace TarhApi.Middleware
     public class AppHandlerMiddleware  :SRLCore.Middleware.HandlerMiddleware<TarhDb,User,Role,UserRole>
          
     {
-        public override string[] no_auth_actions => new string[] { nameof(UserController.AuthenticatePost) }; 
+        public override string[] no_auth_actions => new string[] { nameof(UserController.AuthenticatePost), nameof(UserController.AddUser) }; 
 
         public AppHandlerMiddleware(RequestDelegate next): base(next)
         { 

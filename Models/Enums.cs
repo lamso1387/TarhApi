@@ -25,7 +25,11 @@ namespace TarhApi
         [Description("نوع متقاضی")]
         ApplicantType = 6,
         [Description("رده مرتبط")]
-        RelatedCategory = 7
+        RelatedCategory = 7,
+        [Description("نوع سند")]
+        DocType = 8,
+        [Description("شرکت زیرمجموعه")]
+        SubCompany = 9
     }
      
 }

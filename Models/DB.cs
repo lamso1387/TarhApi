@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema; 
-
+using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 
 namespace TarhApi.Models
 {
@@ -36,6 +36,8 @@ namespace TarhApi.Models
             modelBuilder.Entity<BaseInfo>().HasMany(c => c.evaluation_unit_plans).WithOne(e => e.evaluation_unit).HasForeignKey(e => e.evaluation_unit_id);
             modelBuilder.Entity<BaseInfo>().HasMany(c => c.type_applicants).WithOne(e => e.type).HasForeignKey(e => e.type_id);
             modelBuilder.Entity<BaseInfo>().HasMany(c => c.related_category_applicants).WithOne(e => e.related_category).HasForeignKey(e => e.related_category_id);
+            modelBuilder.Entity<BaseInfo>().HasMany(c => c.evidences).WithOne(e => e.doc_type).HasForeignKey(e => e.doc_type_id);
+            modelBuilder.Entity<BaseInfo>().HasMany(c => c.sub_companies).WithOne(e => e.sub_company).HasForeignKey(e => e.sub_company_id);
 
             modelBuilder.Entity<Province>().HasMany(c => c.cities).WithOne(e => e.province).HasForeignKey(e => e.province_id);
             modelBuilder.Entity<City>().HasMany(c => c.applicants).WithOne(e => e.city).HasForeignKey(e => e.city_id);
@@ -76,23 +78,39 @@ namespace TarhApi.Models
         public override DbSet<User> Users { get; set; }
         public override DbSet<Role> Roles { get; set; }
         public override  DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<Evidence> Evidences { get; set; }
     }
 
     public class Evidence : SRLCore.Model.CommonProperty
     {
+        public long doc_type_id { get; set; }
+        public BaseInfo doc_type { get; set; }
+        public long sub_company_id { get; set; }
+        public BaseInfo sub_company { get; set; }
         [Required]
-        public string title { get; set; }
-        public DateTime evidence_date { get; set; } 
+        public string evidence_pdate { get; set; } 
         public string description { get; set; }
         public string tag { get; set; }
 
-    }
-    public class BaseInfo : SRLCore.Model.CommonProperty
-    { 
-        public ICollection<Applicant> related_category_applicants { get; set; } 
-        [Required]
-        public string title { get; set; }
-    }
+        public string pdf_file_name { get; set; }
+        public string pdf_file_path { get; set; }
+
+        public string pdf_guid { get; set; }
+        public string explain { get; set; }
+
+
+
+        [NotMapped]
+        public string doc_type_title => doc_type?.title;
+        [NotMapped]
+        public string sub_company_title => sub_company?.title;
+        [NotMapped]
+        private string pdf_base64_string => pdf_guid==null ? null : Convert.ToBase64String(
+            File.ReadAllBytes(string.Join("", new StreamReader(@"EvidenceFolderPath.txt").ReadLine(),"\\", pdf_guid ,".pdf")));
+
+        [NotMapped]
+        public SrlFile pdf_file => pdf_guid == null ? null :  new SrlFile {base64_string= pdf_base64_string, name= pdf_file_name };
+    } 
 
     public class Plan : SRLCore.Model.CommonProperty
     {
@@ -210,6 +228,9 @@ namespace TarhApi.Models
         public ICollection<Plan> evaluation_unit_plans { get; set; }
         public ICollection<Applicant> type_applicants { get; set; }
         public ICollection<Applicant> related_category_applicants { get; set; }
+        public ICollection<Evidence> evidences { get; set; }
+        public ICollection<Evidence> sub_companies { get; set; }
+
 
         [Column(TypeName = "nvarchar(50)")]
         [Required]

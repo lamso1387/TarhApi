@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TarhApi.Models;
 
 namespace TarhApi.Migrations
 {
     [DbContext(typeof(TarhDb))]
-    partial class TarhDbModelSnapshot : ModelSnapshot
+    [Migration("20220904041927_evidence_pdate")]
+    partial class evidence_pdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,30 +150,18 @@ namespace TarhApi.Migrations
                     b.Property<string>("evidence_pdate")
                         .IsRequired();
 
-                    b.Property<string>("explain");
-
                     b.Property<long?>("modifier_id");
 
                     b.Property<DateTime?>("modify_date");
 
-                    b.Property<string>("pdf_file_name");
-
-                    b.Property<string>("pdf_file_path");
-
-                    b.Property<string>("pdf_guid");
-
                     b.Property<string>("status")
                         .IsRequired();
-
-                    b.Property<long>("sub_company_id");
 
                     b.Property<string>("tag");
 
                     b.HasKey("id");
 
                     b.HasIndex("doc_type_id");
-
-                    b.HasIndex("sub_company_id");
 
                     b.ToTable("Evidences");
                 });
@@ -534,11 +524,6 @@ namespace TarhApi.Migrations
                     b.HasOne("TarhApi.Models.BaseInfo", "doc_type")
                         .WithMany("evidences")
                         .HasForeignKey("doc_type_id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("TarhApi.Models.BaseInfo", "sub_company")
-                        .WithMany("sub_companies")
-                        .HasForeignKey("sub_company_id")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
