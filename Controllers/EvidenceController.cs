@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using System.ComponentModel;
 using SRLCore.Model;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace TarhApi.Controllers
 {
@@ -54,10 +55,12 @@ namespace TarhApi.Controllers
             request.CheckValidation(response);
 
             var entity = RequestToEntity(request, null);
-
+            FileEntity file = null;
             if (!string.IsNullOrWhiteSpace(request.pdf_file?.base64_string))
             {
-                CreateNewFile(entity, request);
+                file= CreateNewFile(entity, request.pdf_file);
+                entity.files = new Collection<FileEntity>();
+                entity.files.Add(file);
             }
 
 
@@ -73,26 +76,25 @@ namespace TarhApi.Controllers
             });
         }
 
-        private void CreateNewFile(Evidence entity, AddEvidenceRequest request)
+        private FileEntity CreateNewFile(Evidence entity, SrlFile file)
         {
-            entity.pdf_file_name = request.pdf_file.name;
-            string file_guid_name = Guid.NewGuid().ToString();
-            entity.pdf_guid = file_guid_name;
-            byte[] bytes = Convert.FromBase64String(request.pdf_file.base64_string);
             string folder = new StreamReader(@"EvidenceFolderPath.txt").ReadLine();
-            string file_path = Path.Combine(folder,$"{file_guid_name}.pdf");
-            entity.pdf_file_path = file_path;
-            System.IO.File.WriteAllBytes(file_path, bytes);
+            FileEntity file_entity = new FileEntity(user_session_id, file.name, folder,"pdf");
+            file_entity.CreateFile(file.base64_string);
+            return file_entity;
         }
         private void DeleteFile(Evidence entity)
         {
-            entity.pdf_file_name = null;
+          /*  var file = entity.files.ToList()[0];
             string file_guid_name = entity.pdf_guid;
+            entity.pdf_file_name = null;
             entity.pdf_guid = null;
-            string folder = new StreamReader(@"EvidenceFolderPath.txt").ReadLine();
-            string file_path = entity.pdf_file_path;//folder + "\\" + file_guid_name + ".pdf";
-            System.IO.File.Delete(file_path);
-            entity.pdf_file_path = null;
+            string folder = entity.pdf_folder_path;
+            string file_path = Path.Combine(folder, $"{file_guid_name}.pdf");*/
+            
+            System.IO.File.Delete(entity.files.First().file_full_path); 
+            
+
         }
 
         [HttpPost("search")]
@@ -104,6 +106,7 @@ namespace TarhApi.Controllers
             var query = await Db.GetEvidences(request).Paging(response, request.page_start, request.page_size)
                 .Include(x => x.doc_type)
                 .Include(x => x.sub_company)
+                .Include(x=>x.files)
                 .ToListAsync();
 
             return response.ToResponse(query, Models.SelectableField.EvidenceSearchSelector);
@@ -118,7 +121,7 @@ namespace TarhApi.Controllers
 
             var existingEntity = await Db.GetEvidence(new Evidence { id = id });
             existingEntity.ThrowIfNotExist();
-
+            await Db.Entry(existingEntity).Collection(x => x.files).LoadAsync();
 
             return response.ToResponse(existingEntity, SelectableField.EvidenceSelector);
         }
@@ -136,6 +139,7 @@ namespace TarhApi.Controllers
 
             var existingEntity = await Db.GetEvidence(entity);
             existingEntity.ThrowIfNotExist();
+            await Db.Entry(existingEntity).Collection(x => x.files).LoadAsync();
 
             existingEntity.description = entity.description;
             existingEntity.doc_type_id = entity.doc_type_id;
@@ -144,14 +148,14 @@ namespace TarhApi.Controllers
             existingEntity.sub_company_id = entity.sub_company_id;
             existingEntity.explain = entity.explain;
 
-            if (existingEntity.pdf_file?.base64_string != request.pdf_file?.base64_string)
+            if (existingEntity.files.ToList()[0]?.file_var?.base64_string != request.pdf_file?.base64_string)
 
                 if (string.IsNullOrWhiteSpace(request.pdf_file?.name))
                     DeleteFile(existingEntity);
                 else
                 {
-                    if (!string.IsNullOrWhiteSpace(existingEntity.pdf_file_name)) DeleteFile(existingEntity);
-                    CreateNewFile(existingEntity, request);
+                    if (!string.IsNullOrWhiteSpace(existingEntity.files.ToList()[0]?.file_name)) DeleteFile(existingEntity);
+                    CreateNewFile(existingEntity, request.pdf_file);
                 }
 
             await Db.UpdateSave();
@@ -168,8 +172,9 @@ namespace TarhApi.Controllers
 
             var existingEntity = await Db.GetEvidence(new Evidence { id = id });
             existingEntity.ThrowIfNotExist();
+            Db.Entry(existingEntity).Collection(s => s.files).Load();
 
-            if (!string.IsNullOrWhiteSpace(existingEntity.pdf_file_name))
+            if ( existingEntity.files.Any())
                 DeleteFile(existingEntity);
 
             await Db.RemoveSave(existingEntity);

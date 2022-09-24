@@ -21,8 +21,8 @@ namespace TarhApi.Models
             x.evidence_pdate,
             x.tag,
             x.sub_company_id,
-            x.sub_company_title, 
-            x.pdf_file,
+            x.sub_company_title,
+            pdf_file= x.files.ToList()[0].file_var,
             x.explain
         };
         public static Func<Evidence, object> EvidenceSearchSelector => x => new
@@ -37,7 +37,7 @@ namespace TarhApi.Models
             x.tag,
             x.sub_company_id,
             x.sub_company_title,
-            x.pdf_file_name
+            pdf_file_name=x.files.ToList()[0]?.file_name
         };
         public static Func<Applicant, object> ApplicantSelector => x => new
         {

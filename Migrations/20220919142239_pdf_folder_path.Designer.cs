@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TarhApi.Models;
 
 namespace TarhApi.Migrations
 {
     [DbContext(typeof(TarhDb))]
-    partial class TarhDbModelSnapshot : ModelSnapshot
+    [Migration("20220919142239_pdf_folder_path")]
+    partial class pdf_folder_path
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,40 +205,6 @@ namespace TarhApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Experts");
-                });
-
-            modelBuilder.Entity("TarhApi.Models.FileEntity", b =>
-                {
-                    b.Property<long>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("create_date");
-
-                    b.Property<long>("creator_id");
-
-                    b.Property<long>("evidence_id");
-
-                    b.Property<string>("file_extention");
-
-                    b.Property<string>("file_guid");
-
-                    b.Property<string>("file_name");
-
-                    b.Property<string>("folder_path");
-
-                    b.Property<long?>("modifier_id");
-
-                    b.Property<DateTime?>("modify_date");
-
-                    b.Property<string>("status")
-                        .IsRequired();
-
-                    b.HasKey("id");
-
-                    b.HasIndex("evidence_id");
-
-                    b.ToTable("FileEntities");
                 });
 
             modelBuilder.Entity("TarhApi.Models.Level", b =>
@@ -583,14 +551,6 @@ namespace TarhApi.Migrations
                     b.HasOne("TarhApi.Models.User", "user")
                         .WithOne("expert")
                         .HasForeignKey("TarhApi.Models.Expert", "user_id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("TarhApi.Models.FileEntity", b =>
-                {
-                    b.HasOne("TarhApi.Models.Evidence", "evidence")
-                        .WithMany("files")
-                        .HasForeignKey("evidence_id")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

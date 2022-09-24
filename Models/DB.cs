@@ -11,7 +11,7 @@ namespace TarhApi.Models
 {
 #pragma warning disable CS1591
 
-    public class TarhDb : SRLCore.Model.DbEntity<TarhDb,User,Role,UserRole>
+    public class TarhDb : SRLCore.Model.DbEntity<TarhDb, User, Role, UserRole>
     {
         public override string GetConnectionString()
         {
@@ -21,7 +21,7 @@ namespace TarhApi.Models
             : base(options)
         {
 
-        }  
+        }
 
         public override void ModelCreator(ModelBuilder modelBuilder)
         {
@@ -62,9 +62,12 @@ namespace TarhApi.Models
             modelBuilder.ApplyConfiguration(new User.UserConfiguration());
 
             RestrinctDeleteBehavior(modelBuilder);
+
+            modelBuilder.Entity<Evidence>().HasMany(c => c.files).WithOne(e => e.evidence).HasForeignKey(e => e.evidence_id).OnDelete(DeleteBehavior.Cascade);
+
         }
 
-        
+
 
         public DbSet<Plan> Plans { get; set; }
         public DbSet<PlanEvent> PlanEvents { get; set; }
@@ -77,23 +80,70 @@ namespace TarhApi.Models
         public DbSet<Applicant> Applicants { get; set; }
         public override DbSet<User> Users { get; set; }
         public override DbSet<Role> Roles { get; set; }
-        public override  DbSet<UserRole> UserRoles { get; set; }
+        public override DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Evidence> Evidences { get; set; }
+        public DbSet<FileEntity> FileEntities { get; set; }
+
     }
 
+    public class FileEntity : SRLCore.Model.CommonProperty
+    {
+        public FileEntity()
+        {
+            
+        }
+
+        public FileEntity(long user_id)
+        {
+            creator_id = user_id;
+        }
+        public FileEntity(long user_id, string file_name_, string folder_path_, string file_extention_)
+        {
+            creator_id = user_id; 
+            file_name = file_name_;
+            folder_path = folder_path_;
+            file_extention = file_extention_;
+        }
+
+        public void CreateFile(string base64_string)
+        {
+            byte[] bytes = Convert.FromBase64String(base64_string);
+
+            System.IO.File.WriteAllBytes(file_full_path, bytes);
+        }
+        public long evidence_id { get; set; }
+        public Evidence evidence { get; set; }
+        public string file_name { get; set; }
+        public string folder_path { get; set; }
+
+        public string file_guid { get; set; }= Guid.NewGuid().ToString();
+        public string file_extention { get; set; }
+         
+        [NotMapped]
+        public string file_full_path => Path.Combine(folder_path, file_full_name);
+        [NotMapped]
+        public string file_full_name => $"{file_guid}.{file_extention}";
+        [NotMapped]
+        private string file_base64_string => file_guid == null ? null : Convert.ToBase64String(File.ReadAllBytes(file_full_path));
+        [NotMapped]
+        public SrlFile file_var => file_guid == null ? null : new SrlFile { base64_string = file_base64_string, name = file_name };
+    }
     public class Evidence : SRLCore.Model.CommonProperty
     {
+        public ICollection<FileEntity> files { get; set; }
         public long doc_type_id { get; set; }
         public BaseInfo doc_type { get; set; }
         public long sub_company_id { get; set; }
         public BaseInfo sub_company { get; set; }
         [Required]
-        public string evidence_pdate { get; set; } 
+        public string evidence_pdate { get; set; }
         public string description { get; set; }
         public string tag { get; set; }
 
         public string pdf_file_name { get; set; }
         public string pdf_file_path { get; set; }
+        public string pdf_folder_path { get; set; }
+
 
         public string pdf_guid { get; set; }
         public string explain { get; set; }
@@ -105,12 +155,12 @@ namespace TarhApi.Models
         [NotMapped]
         public string sub_company_title => sub_company?.title;
         [NotMapped]
-        private string pdf_base64_string => pdf_guid==null ? null : Convert.ToBase64String(
-            File.ReadAllBytes(string.Join("", new StreamReader(@"EvidenceFolderPath.txt").ReadLine(),"\\", pdf_guid ,".pdf")));
+        private string pdf_base64_string => pdf_guid == null ? null : Convert.ToBase64String(
+            File.ReadAllBytes(Path.Combine(pdf_folder_path, $"{pdf_guid}.pdf")));
 
         [NotMapped]
-        public SrlFile pdf_file => pdf_guid == null ? null :  new SrlFile {base64_string= pdf_base64_string, name= pdf_file_name };
-    } 
+        public SrlFile pdf_file => pdf_guid == null ? null : new SrlFile { base64_string = pdf_base64_string, name = pdf_file_name };
+    }
 
     public class Plan : SRLCore.Model.CommonProperty
     {
@@ -162,7 +212,7 @@ namespace TarhApi.Models
         [NotMapped]
         public string province_title => applicant_company?.city?.province_title;
         [NotMapped]
-        public string applicant_name => applicant_company?.name;  
+        public string applicant_name => applicant_company?.name;
         [NotMapped]
         public Level last_level { get; set; }
 
@@ -236,7 +286,7 @@ namespace TarhApi.Models
         [Required]
         public BaseKind kind { get; set; }
         [Required]
-        public string title { get; set; } 
+        public string title { get; set; }
         public bool? is_default { get; set; }//add-migration "addIsDefaultToBaseinfo"
 
         [NotMapped]
@@ -262,7 +312,7 @@ namespace TarhApi.Models
         public ICollection<City> cities { get; set; }
 
         [Required]
-        public override string title { get; set; } 
+        public override string title { get; set; }
     }
     public class Expert : SRLCore.Model.CommonProperty
     {
@@ -286,10 +336,10 @@ namespace TarhApi.Models
         public BaseInfo related_category { get; set; }
 
         [Required]
-        public string name { get; set; } 
-        public string ceo { get; set; } 
-        public string address { get; set; }  
-        public string phone { get; set; } 
+        public string name { get; set; }
+        public string ceo { get; set; }
+        public string address { get; set; }
+        public string phone { get; set; }
         public string representative { get; set; }
 
         [NotMapped]
@@ -307,7 +357,7 @@ namespace TarhApi.Models
     public class User : SRLCore.Model.IUser
     {
 
-        public ICollection<UserRole> user_roles { get; set; } 
+        public ICollection<UserRole> user_roles { get; set; }
         public Expert expert { get; set; }
 
         [Required]
@@ -332,7 +382,7 @@ namespace TarhApi.Models
         public override bool? change_pass_next_login { get; set; } = true;
         [NotMapped]
         public override DateTime? last_login { get; set; }
-        public override long creator_id { get; set; } 
+        public override long creator_id { get; set; }
 
         public class UserConfiguration : IEntityTypeConfiguration<User>
         {
@@ -347,7 +397,7 @@ namespace TarhApi.Models
     public partial class Role : SRLCore.Model.IRole
     {
         public ICollection<UserRole> user_roles { get; set; }
-        public override long creator_id { get; set; }  
+        public override long creator_id { get; set; }
         [Required]
         public override string name { get; set; }
         [Required]
@@ -358,7 +408,7 @@ namespace TarhApi.Models
     }
     public class UserRole : SRLCore.Model.IUserRole
     {
-        public override long creator_id { get; set; } 
+        public override long creator_id { get; set; }
 
         public override long user_id { get; set; }
         public User user { get; set; }
