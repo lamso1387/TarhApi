@@ -75,13 +75,10 @@ namespace TarhApi
                     options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());//convert enum to api in api responce
                     options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;//not result null item in api resporce
                                                                                                             // options.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;//set request input to null if request has extra fields
-
                 });
             services.AddDbContext<TarhDb>(builder =>
             {
                 builder.UseSqlServer(GetConnection());
-                //
-
             });
 
             services.AddSwaggerGen(c =>
