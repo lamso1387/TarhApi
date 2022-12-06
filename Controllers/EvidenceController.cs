@@ -52,7 +52,7 @@ namespace TarhApi.Controllers
             SingleResponse<object> response = new SingleResponse<object>();
 
 
-            request.CheckValidation(response);
+            request.CheckValidation();
 
             var entity = RequestToEntity(request, null);
             FileEntity file = null;
@@ -132,7 +132,7 @@ namespace TarhApi.Controllers
         {
             SingleResponse<object> response = new SingleResponse<object>();
 
-            request.CheckValidation(response);
+            request.CheckValidation();
 
             var entity = RequestToEntity(request, request.id);
 

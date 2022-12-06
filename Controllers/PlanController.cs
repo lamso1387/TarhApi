@@ -37,7 +37,7 @@ namespace TarhApi.Controllers
 
             SingleResponse<object> response = new SingleResponse<object>();
 
-            request.CheckValidation(response);
+            request.CheckValidation();
 
             var entity = request.ToEntity();
 
@@ -90,7 +90,7 @@ namespace TarhApi.Controllers
         {
             SingleResponse<object> response = new SingleResponse<object>();
 
-            request.CheckValidation(response);
+            request.CheckValidation();
 
             var entity = request.ToEntity(request.id);
 

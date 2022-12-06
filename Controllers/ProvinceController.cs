@@ -38,7 +38,7 @@ namespace TarhApi.Controllers
                 Thread.Sleep(10000);
             }
 
-            request.CheckValidation(response);
+            request.CheckValidation();
 
             var entity = request.ToEntity(user_session_id);
 
@@ -101,7 +101,7 @@ namespace TarhApi.Controllers
         {
             SingleResponse<object> response = new SingleResponse<object>();
 
-            request.CheckValidation(response);
+            request.CheckValidation();
 
             var entity = request.ToEntity(user_session_id, request.id);
 

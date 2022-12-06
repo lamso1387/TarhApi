@@ -68,7 +68,7 @@ namespace TarhApi.Controllers
             try
             {
 
-                request.CheckValidation(response);
+                request.CheckValidation();
 
                 var entiry =  request.ToEntity(user_session_id);
 
@@ -209,7 +209,7 @@ namespace TarhApi.Controllers
             try
             {
 
-                request.CheckValidation(response);
+                request.CheckValidation();
 
                 var entiry = request.ToEntity(user_session_id);
                 entiry.id = request.id;

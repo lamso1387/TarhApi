@@ -30,7 +30,7 @@ namespace TarhApi.Controllers
             
             SingleResponse<object> response = new SingleResponse<object>();
 
-            request.CheckValidation(response);
+            request.CheckValidation();
 
             var entity = request.ToEntity();
             await Db.AddSave(entity); 
