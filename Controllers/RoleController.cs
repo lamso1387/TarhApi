@@ -212,7 +212,7 @@ namespace TarhApi.Controllers
                 request.CheckValidation();
 
                 var entiry = request.ToEntity(user_session_id);
-                entiry.id = request.id;
+                entiry.id = (long)request.id;
 
                 var existingEntity = await Db.GetRole(new Role { id=entiry.id});
                 if (existingEntity == null)
