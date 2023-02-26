@@ -9,7 +9,7 @@ namespace TarhApi
 {
     public class Constants
     {
-        public class MessageText: SRLCore.Constants.MessageText
+        public class MessageText: SRLCore.Model.Constants.MessageText
         { 
         }
         public class Actions

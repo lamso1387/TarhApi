@@ -23,13 +23,21 @@ namespace TarhApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : SRLCore.Controllers.UserController<TarhDb, User, Role, UserRole> {
+    public class UserController : SRLCore.Controllers.UserController<TarhDb, User, Role, UserRole,AddUserRequest> {
 
         public UserController(IDistributedCache distributedCache, ILogger<UserController> logger, TarhDb dbContext, SRLCore.Services.UserService<TarhDb, User, Role, UserRole> userService) :
               base(distributedCache, logger, dbContext, userService)
         {
 
 
+        }
+
+        protected override void EditUserFieldFromRequest(User existing_entity, User new_entity)
+        {
+            existing_entity.first_name = new_entity.first_name;
+            existing_entity.last_name = new_entity.last_name;
+            existing_entity.mobile = new_entity.mobile;
+            existing_entity.password = new_entity.password;
         }
 
         protected override User RequestToEntity(AddUserRequest requst) {

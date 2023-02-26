@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Internal;
 using SRLCore.Model;
+using SRLCore.Model.Constants;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -66,23 +67,23 @@ namespace TarhApi.Models
     }
     public class AddRoleRequest : AppRequest
     {
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("نام")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("نام")]
         public string name { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("دسترسی ها")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("دسترسی ها")]
         public List<string> accesses { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("کاربران")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("کاربران")]
         public List<long> user_ids { get; set; }
         protected override bool CheckPropertyValidation()
         {
             bool is_valid = true;
             is_valid = accesses == null ? false : accesses.Count > 0;
             if (is_valid == false)
-                validation_errors.Add(Constants.MessageText.RoleAccessNotDefinedError);
+                validation_errors.Add(MessageText.RoleAccessNotDefinedError);
             else
             {
                 is_valid = user_ids == null ? false : user_ids.Count > 0;
                 if (is_valid == false)
-                    validation_errors.Add(Constants.MessageText.RoleUsersNotDefinedError);
+                    validation_errors.Add(MessageText.RoleUsersNotDefinedError);
             }
             return is_valid;
         }
@@ -92,25 +93,25 @@ namespace TarhApi.Models
      
     public class AddPlanRequest : AppRequest
     {
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("نوع طرح")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("نوع طرح")]
         public long type_id { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("حوزه فناوری")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("حوزه فناوری")]
         public long technology_id { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("چرخه عمر")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("چرخه عمر")]
         public long lifecycle_id { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("نوع دانش بنیانی")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("نوع دانش بنیانی")]
         public long knowledge_based_company_type_id { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("سمت ارزیاب")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("سمت ارزیاب")]
         public long assessor_position_id { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("واحد ارزیاب")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("واحد ارزیاب")]
         public long evaluation_unit_id { get; set; }
         [DisplayName("شرکت متقاضی")]
         public long? applicant_id { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("کارشناس")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("کارشناس")]
         public long expert_id { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("موضوع")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("موضوع")]
         public string subject { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("شناسه طرح")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("شناسه طرح")]
         public string shenase { get; set; }
         [DisplayName("براورد ریالی")]
         public decimal estimate_riali { get; set; }
@@ -121,17 +122,17 @@ namespace TarhApi.Models
     }
     public class AddApplicantRequest : AppRequest
     {
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("نام متقاضی")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("نام متقاضی")]
         public string name { get; set; }
 
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("نوع متقاضی")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("نوع متقاضی")]
         public long type_id { get; set; }
 
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("شهر")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("شهر")]
         public long city_id { get; set; }
         [DisplayName("نماینده")]
         public string representative { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("رده مرتبط")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("رده مرتبط")]
         public long related_category_id { get; set; }
         [DisplayName("ادرس")]
         public string address { get; set; }
@@ -161,42 +162,42 @@ namespace TarhApi.Models
     }
     public class AddProvinceRequest : AppRequest
     {
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
         public string title { get; set; }
 
     }
     public class AddLevelRequest : AppRequest
     {
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
         public string title { get; set; }
 
     }
     public class AddCityRequest : AppRequest
     {
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("استان")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("استان")]
         public long province_id { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
         public string title { get; set; }
 
     }
     public class AddLevelEventRequest : AppRequest
     {
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("مرحله")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("مرحله")]
         public long level_id { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
         public string title { get; set; }
 
     }
     public class AddEventRequest : AppRequest
     {
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("مرحله")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("مرحله")]
         public long plan_id { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("نوع رویداد")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("نوع رویداد")]
         public long level_event_id { get; set; }
 
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("شرح")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("شرح")]
         public string description { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("تاریخ رویداد")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("تاریخ رویداد")]
         public string pdate { get; set; }
         [DisplayName("انجام دهنده")]
         public string doer { get; set; }
@@ -210,17 +211,17 @@ namespace TarhApi.Models
     }
     public class AddExpertRequest : AppRequest
     {
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("کاربر")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("کاربر")]
         public long user_id { get; set; } 
 
     }
     public class AddBaseInfoRequest : AppRequest
     {
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("نوع اطلاعات پایه")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("نوع اطلاعات پایه")]
         public BaseKind kind { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("عنوان")]
         public string title { get; set; }
-        [Required(ErrorMessage = Constants.MessageText.RequiredFieldErrorDynamic), DisplayName("پیش فرض")]
+        [Required(ErrorMessage = MessageText.RequiredFieldErrorDynamic), DisplayName("پیش فرض")]
         public bool? is_default { get; set; }
     }
 
@@ -232,9 +233,9 @@ namespace TarhApi.Models
     }
     public class AddEvidenceRequest : AppRequest
     {
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("نوع سند")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("نوع سند")]
         public long doc_type_id { get; set; }
-        [Range(1, long.MaxValue, ErrorMessage = Constants.MessageText.RangeFieldErrorDynamic), DisplayName("شرکت زیرمجموعه")]
+        [Range(1, long.MaxValue, ErrorMessage = MessageText.RangeFieldErrorDynamic), DisplayName("شرکت زیرمجموعه")]
         public long sub_company_id { get; set; }
         [ DisplayName("برچسب")]
         public string tag { get; set; }
